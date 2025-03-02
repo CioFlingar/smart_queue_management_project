@@ -1,0 +1,32 @@
+{% from "bootstrap5/form.html" import render_form %}
+{% extends "base.html" %}
+
+{% block title %}Create Queue{% endblock %}
+
+{% block content %}
+    <div class="container d-flex justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg mt-5">
+                <div class="card-header bg-primary text-white text-center">
+                    <h2>Create a New Queue</h2>
+                </div>
+                <div class="card-body text-center">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                        {{ render_form(form) }}
+                            <a href="{{ url_for('home') }}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

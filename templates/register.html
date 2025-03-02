@@ -1,0 +1,35 @@
+{% from "bootstrap5/form.html" import render_form %}
+{% extends 'base.html' %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="container min-vh-100 d-flex justify-content-center align-items-center">
+    <div class="card shadow-lg p-4 w-100" style="max-width: 500px;">
+        <h2 class="text-center mb-4">Create an Account</h2>
+
+        <!-- Flash Messages for Registration Errors -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Registration Form -->
+        <form method="POST">
+            {{ render_form(form, novalidate=True, button_map={"submit": "primary"}) }}
+        </form>
+
+        <!-- Login Link -->
+        <p class="text-center mt-3">
+            Already have an account?
+            <a href="{{ url_for('login') }}" class="text-primary">Login</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

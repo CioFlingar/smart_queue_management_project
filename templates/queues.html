@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Available Queues{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-lg p-4">
+        <h1 class="text-center mb-4">Available Queues</h1>
+
+        <!-- Flash Messages for User Feedback -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show text-center" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- No Queues Available Message -->
+        {% if not queues %}
+        <div class="alert alert-warning text-center">
+            <i class="fas fa-exclamation-triangle"></i> No queues available at the moment.
+        </div>
+        {% endif %}
+
+        <!-- Queue List -->
+        <div class="row d-flex justify-content-center">
+            {% for queue in queues %}
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4 d-flex justify-content-center">
+                <div class="card border-0 shadow-sm text-center" style="width: 18rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ queue.name }}</h5>
+                        <p class="card-text text-muted">Manage your position in this queue.</p>
+                        <a href="{{ url_for('queue_details', queue_id=queue.id) }}" class="btn btn-outline-primary w-100 mb-2">View Details</a>
+                        {% if current_user.is_authenticated and current_user.id == 1 %}
+                            <a href="{{ url_for('delete_queue', queue_id=queue.id) }}" class="btn btn-outline-danger w-100">
+                                <i class="fas fa-trash-alt"></i> Delete Queue
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
