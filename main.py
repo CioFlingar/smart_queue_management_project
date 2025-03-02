@@ -29,17 +29,19 @@ Bootstrap5(app)
 app.config["SECRET_KEY"] = "SOmething"
 
 #twilio setup
-TWILIO_ACCOUNT_SID = "your_twilio_sid"
-TWILIO_AUTH_TOKEN = "your_twilio_token"
-TWILIO_PHONE_NUMBER = "your_twilio_number"
+
+TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
+TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
+TWILIO_PHONE_NUMBER = os.getenv("TWILIO_PHONE_NUMBER")
 client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 
 # Flask-Mail setup
 app.config["MAIL_SERVER"] = "smtp.gmail.com"
 app.config["MAIL_PORT"] = 587
 app.config["MAIL_USE_TLS"] = True
-app.config["MAIL_USERNAME"] = "your_email@gmail.com"
-app.config["MAIL_PASSWORD"] = "your_email_password"
+app.config["MAIL_USERNAME"] = os.getenv("MAIL_USERNAME")
+app.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASSWORD")
+
 
 mail = Mail(app)
 
@@ -61,7 +63,8 @@ login_manager.init_app(app)
 
 @login_manager.user_loader
 def load_user(user_id):
-    return db.get_or_404(User, user_id)
+    return db.session.get(User, user_id)
+
 
 
 #initializing database
@@ -274,7 +277,7 @@ def join_queue(queue_id):
 @login_required
 @admin_only
 def process_queue(queue_id, action):
-    user_id= request.form.get("user_id")
+    user_id = int(request.form.get("user_id"))
     queue_entry = QueueUser.query.filter_by(queue_id=queue_id, customer_id=user_id).first_or_404()
 
     if not queue_entry:
@@ -296,13 +299,14 @@ def process_queue(queue_id, action):
     return redirect(url_for("queue_details", queue_id=queue_id))
 
 
+# send message or mail to user
 @app.route("/queue_notify/<int:queue_id>/<int:user_id>")
 @login_required
 def notify_user(queue_id, user_id):
     queue_entry = QueueUser.query.filter_by(queue_id=queue_id, customer_id=user_id).first_or_404()
     user = db.get_or_404(User, queue_entry.customer_id)
 
-    send_sms(user.email, f"Your turn is coming soon in queue: {queue_entry.queue_id}!")
+    send_sms(user.phone_number, f"Your turn is coming soon in queue: {queue_entry.queue_id}!")
     send_email(user.email, "Queue Update", f"Your turn is coming soon in queue: {queue_entry.queue_id}!")
 
     flash("User notified successfully!", "success")
