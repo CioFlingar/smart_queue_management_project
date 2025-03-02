@@ -17,10 +17,6 @@ class LoginForm(FlaskForm):
     submit = SubmitField("Sign In!")
 
 
-class CommentForm(FlaskForm):
-    comment_text = CKEditorField("Comment", validators=[DataRequired()])
-    submit = SubmitField("Submit Comment")
-
 class CreateQueueForm(FlaskForm):
     name = StringField("Queue Name", validators=[DataRequired()])
     submit = SubmitField("Create Queue")
